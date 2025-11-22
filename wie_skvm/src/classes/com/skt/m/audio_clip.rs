@@ -14,7 +14,15 @@ impl AudioClip {
             name: "com/skt/m/AudioClip",
             parent_class: None,
             interfaces: vec![],
-            methods: vec![JavaMethodProto::new_abstract("play", "()V", Default::default())],
+            methods: vec![
+                JavaMethodProto::new_abstract("open", "([BII)V", Default::default()),
+                JavaMethodProto::new_abstract("close", "()V", Default::default()),
+                JavaMethodProto::new_abstract("play", "()V", Default::default()),
+                JavaMethodProto::new_abstract("loop", "()V", Default::default()),
+                JavaMethodProto::new_abstract("stop", "()V", Default::default()),
+                JavaMethodProto::new_abstract("pause", "()V", Default::default()),
+                JavaMethodProto::new_abstract("resume", "()V", Default::default()),
+            ],
             fields: vec![],
             access_flags: ClassAccessFlags::INTERFACE,
         }
