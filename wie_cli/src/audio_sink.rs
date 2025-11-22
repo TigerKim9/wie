@@ -1,10 +1,11 @@
-use std::sync::{Mutex, mpsc::Sender};
+use std::sync::{Mutex, atomic::{AtomicU8, Ordering}, mpsc::Sender};
 
 use midir::MidiOutputConnection;
 
 pub struct AudioSink {
     midi_out: Option<Mutex<MidiOutputConnection>>,
     audio_tx: Sender<(u8, u32, Vec<i16>)>,
+    volume: AtomicU8,
 }
 
 impl AudioSink {
@@ -12,6 +13,7 @@ impl AudioSink {
         Self {
             midi_out: midi_out.map(Mutex::new),
             audio_tx,
+            volume: AtomicU8::new(100),
         }
     }
 }
@@ -49,5 +51,13 @@ impl wie_backend::AudioSink for AudioSink {
         if let Some(x) = self.midi_out.as_ref() {
             x.lock().unwrap().send(&[0xC0 | channel_id, program]).unwrap()
         }
+    }
+
+    fn set_volume(&self, level: u8) {
+        self.volume.store(level.min(100), Ordering::SeqCst);
+    }
+
+    fn get_volume(&self) -> u8 {
+        self.volume.load(Ordering::SeqCst)
     }
 }

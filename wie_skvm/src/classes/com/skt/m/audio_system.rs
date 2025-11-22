@@ -45,24 +45,24 @@ impl AudioSystem {
     async fn get_max_volume(_jvm: &Jvm, _context: &mut WieJvmContext, format: ClassInstanceRef<String>) -> JvmResult<i32> {
         tracing::debug!("com.skt.m.AudioSystem::getMaxVolume({:?})", format);
 
-        // TODO: Implement actual volume control in AudioSink
-        // Return a reasonable maximum volume level (0-100 scale)
+        // Maximum volume level (0-100 scale)
         Ok(100)
     }
 
-    async fn get_volume(_jvm: &Jvm, _context: &mut WieJvmContext, format: ClassInstanceRef<String>) -> JvmResult<i32> {
+    async fn get_volume(_jvm: &Jvm, context: &mut WieJvmContext, format: ClassInstanceRef<String>) -> JvmResult<i32> {
         tracing::debug!("com.skt.m.AudioSystem::getVolume({:?})", format);
 
-        // TODO: Implement actual volume control in AudioSink
-        // Return current volume at maximum for now
-        Ok(100)
+        // Get global volume from audio system
+        let volume = context.system().audio().get_global_volume();
+        Ok(volume as i32)
     }
 
-    async fn set_volume(_jvm: &Jvm, _context: &mut WieJvmContext, format: ClassInstanceRef<String>, level: i32) -> JvmResult<()> {
+    async fn set_volume(_jvm: &Jvm, context: &mut WieJvmContext, format: ClassInstanceRef<String>, level: i32) -> JvmResult<()> {
         tracing::debug!("com.skt.m.AudioSystem::setVolume({:?}, {})", format, level);
 
-        // TODO: Implement actual volume control in AudioSink
-        // For now, just accept the value without applying it
+        // Set global volume in audio system
+        let volume = level.clamp(0, 100) as u8;
+        context.system().audio().set_global_volume(volume);
 
         Ok(())
     }

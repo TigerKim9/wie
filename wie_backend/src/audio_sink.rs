@@ -4,4 +4,10 @@ pub trait AudioSink: Sync + Send {
     fn midi_note_off(&self, channel_id: u8, note: u8, velocity: u8);
     fn midi_program_change(&self, channel_id: u8, program: u8);
     fn midi_control_change(&self, channel_id: u8, control: u8, value: u8);
+
+    /// Set the volume level (0-100)
+    fn set_volume(&self, level: u8);
+
+    /// Get the current volume level (0-100)
+    fn get_volume(&self) -> u8;
 }

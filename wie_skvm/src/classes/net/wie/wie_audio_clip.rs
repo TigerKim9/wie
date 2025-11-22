@@ -95,14 +95,11 @@ impl WieAudioClip {
             return Err(jvm.exception("java/io/IOException", "AudioClip not opened").await);
         }
 
-        // TODO: Implement actual looping support in Audio system
-        // For now, just play once
         let audio_handle: i32 = jvm.get_field(&this, "audioHandle", "I").await?;
         let system = context.system();
 
-        system.audio().play(system, audio_handle as u32).unwrap();
-
-        tracing::warn!("loop() called but true looping not yet implemented - playing once");
+        // Use play_with_loop to enable looping
+        system.audio().play_with_loop(system, audio_handle as u32, true).unwrap();
 
         Ok(())
     }
@@ -123,7 +120,7 @@ impl WieAudioClip {
         Ok(())
     }
 
-    async fn pause(jvm: &Jvm, _context: &mut WieJvmContext, this: ClassInstanceRef<Self>) -> JvmResult<()> {
+    async fn pause(jvm: &Jvm, context: &mut WieJvmContext, this: ClassInstanceRef<Self>) -> JvmResult<()> {
         tracing::debug!("net.wie.WieAudioClip::pause({this:?})");
 
         let is_open: bool = jvm.get_field(&this, "isOpen", "Z").await?;
@@ -131,13 +128,14 @@ impl WieAudioClip {
             return Err(jvm.exception("java/io/IOException", "AudioClip not opened").await);
         }
 
-        // TODO: Implement pause support in Audio system
-        tracing::warn!("pause() called but not yet implemented in audio backend");
+        let audio_handle: i32 = jvm.get_field(&this, "audioHandle", "I").await?;
+
+        context.system().audio().pause(audio_handle as u32).ok();
 
         Ok(())
     }
 
-    async fn resume(jvm: &Jvm, _context: &mut WieJvmContext, this: ClassInstanceRef<Self>) -> JvmResult<()> {
+    async fn resume(jvm: &Jvm, context: &mut WieJvmContext, this: ClassInstanceRef<Self>) -> JvmResult<()> {
         tracing::debug!("net.wie.WieAudioClip::resume({this:?})");
 
         let is_open: bool = jvm.get_field(&this, "isOpen", "Z").await?;
@@ -145,8 +143,9 @@ impl WieAudioClip {
             return Err(jvm.exception("java/io/IOException", "AudioClip not opened").await);
         }
 
-        // TODO: Implement resume support in Audio system
-        tracing::warn!("resume() called but not yet implemented in audio backend");
+        let audio_handle: i32 = jvm.get_field(&this, "audioHandle", "I").await?;
+
+        context.system().audio().resume(audio_handle as u32).ok();
 
         Ok(())
     }

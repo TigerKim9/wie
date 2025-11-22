@@ -91,6 +91,15 @@ impl AudioSink for TestAudioSink {
     fn midi_control_change(&self, _channel_id: u8, _control: u8, _value: u8) {
         todo!()
     }
+
+    fn set_volume(&self, _level: u8) {
+        // Test implementation - no-op
+    }
+
+    fn get_volume(&self) -> u8 {
+        // Test implementation - always return max volume
+        100
+    }
 }
 
 #[derive(Default)]
